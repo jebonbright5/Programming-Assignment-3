@@ -1,0 +1,79 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+from socket import *
+from threading import Thread
+import threading
+
+threads = []  # Store threads
+num_of_threads = 2
+
+connectionCount = 0
+flag = False
+terminate = False
+
+serverPort = 12000
+serverSocket = socket(AF_INET, SOCK_STREAM)
+serverSocket.bind(('', serverPort))
+
+
+# ------- Start Thread Class -------
+class ClientThread(Thread):
+
+    # Constructor for threads
+    def __init__(self, ip, port):
+        Thread.__init__(self)
+        self.ip = ip
+        self.port = port
+        print("Thread started for " + ip + ":" + str(port))  # + '\n')
+
+    # Run func for thread
+    def run(self):
+        while True:
+            message = connectionSocket.recv(1024)
+            print('Server received data: ', message.decode("utf-8"))
+            print("  Tread in use is: " + threading.currentThread().getName())
+            print('    Sending back message in uppercase\n')
+            modified_message = message.upper()
+            connectionSocket.send(modified_message)  # encode?
+
+            if connectionCount >= 2:
+                terminate = True
+
+# ------- End Thread Class -------
+
+
+print('The server is waiting to receive 2 connections...\n')
+
+# Start listening for connections
+while True:
+    serverSocket.listen(2)
+
+    # Accept a connection and create a thread for it
+    (connectionSocket, (ip, port)) = serverSocket.accept()
+    connectionCount += 1
+    newThread = ClientThread(ip, port)
+
+    # Check if first connection (X) and output
+    # Output to server and send to client
+    if connectionCount == 1:
+        print('Accepted first connection, calling it client X\n')
+        connectionSocket.send('Client X connected\n'.encode())
+
+    # Check if second connection (Y)
+    # Output to server and send to client
+    elif connectionCount == 2:
+        print('Accepted second connection, calling it client Y\n')
+        connectionSocket.send('Client Y connected\n'.encode())
+        print('Waiting to receive messages from client X and client Y...\n')
+
+    elif connectionCount > 2:
+        print('Connection Refused - Maximum of 2\n')
+        print('Waiting to receive messages from client X and client Y....\n')
+
+    newThread.start()
+    threads.append(newThread)
+
+    if terminate:
+        print('* joining threads *')
+        for t in threads:
+            t.join()
