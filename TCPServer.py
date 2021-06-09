@@ -18,7 +18,6 @@ programComplete = False # Indicates when the program is complete
 serverName = '127.0.0.1'
 serverPort = 12000
 serverSocket = socket(AF_INET, SOCK_STREAM)
-serverSocket.setsockopt(SOL_SOCKET, SO_REUSEADDR, 1)
 serverSocket.bind((serverName, serverPort))
 
 # -> Begin thread class
@@ -52,12 +51,12 @@ class ClientThread(threading.Thread):
             clientNames.append(self.clientName)
             msgsRcvd.append(message)
             print("Client " + self.clientName + " sent message " + str(msgsRcvd.index(message) + 1) + ": " + message)
-            
-            # If any client sends the message 'bye' the program ends
-            if message == 'Bye':
+
+            if len(msgsRcvd) == 2:
                 print('\nWaiting a bit for clients to close their connections....')
                 print('\nDone.')
                 exit()
+            
 # -> End thread class
 
 print('The server is waiting to receive 2 connections...\n')

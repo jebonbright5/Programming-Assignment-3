@@ -30,10 +30,8 @@ while True:
 
     # Grabs input from user and sends to server
     # Note: raw_input is used here. Py 3 says it doesn't support it, but it will still work when ran in Mininet
-    # Users should have the ability to send messages until a client sends the message 'Bye'
-    while message != 'Bye':
-        message = raw_input('Enter message to send to server: ')
-        clientSocket.send(message.encode())
+    message = raw_input('Enter message to send to server: ')
+    clientSocket.send(message.encode())
 
     # Decode nessage and print to console
     clientSentence = clientSocket.recv(1024).decode('utf-8')
